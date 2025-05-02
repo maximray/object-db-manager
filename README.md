@@ -34,7 +34,12 @@ cd object-db-manager
 pip install -r requirements.txt
 
 # Запуск приложения
-python main.py
+py -m app.app
+
+# Автогенерация документации
+cd docs
+make.bat html
+start build/html/index.html
 ```
 
 ## Пример входящих данных
