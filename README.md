@@ -35,3 +35,11 @@ pip install -r requirements.txt
 
 # Запуск приложения
 python main.py
+```
+
+## Пример входящих данных
+```
+###OBJECT_DB###
+1|ЖК "Северное сияние"|ул. Полярная, 15|2023-01-15|2024-06-30|в процессе|жилой|12500|9
+
+ID|Name object|Address|Date start building|Date end building|Status|Type object|Area|Floors
