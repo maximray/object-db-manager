@@ -1,0 +1,60 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.log
+
+# === Virtual environments ===
+.env/
+.venv/
+env/
+venv/
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === OS-specific ===
+.DS_Store
+Thumbs.db
+
+# === Qt UI ===
+*.qrc
+*.pyc
+
+# === Sphinx docs ===
+app/docs/build/
+app/docs/_build/
+app/docs/*.log
+app/docs/*.doctree
+app/docs/.doctrees
+app/docs/.DS_Store
+app/docs/source/_static
+app/docs/source/_templates
+
+# === Translation files (compiled) ===
+*.qm
+
+# === Misc ===
+*.bak
+*.tmp
+*.swp
+
+# === Compiled binaries or executables ===
+*.exe
+*.dll
+*.out
+*.app
+
+# === Project data/settings ===
+*.ini
+*.dat
+*.cfg
+*.db
+*.sqlite
+Error_file.txt
+object_db.txt
