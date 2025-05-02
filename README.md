@@ -33,11 +33,17 @@ cd object-db-manager
 # Устанавливаем зависимости
 pip install -r requirements.txt
 
+# Компиляция файлов перевода
+cd app/translations
+lrelease translations_ru.ts translations_en.ts
+cd ..
+cd ..
+
 # Запуск приложения
 py -m app.app
 
 # Автогенерация документации
-cd docs
+cd app/docs
 make.bat html
 start build/html/index.html
 ```
