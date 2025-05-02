@@ -27,7 +27,7 @@
 
 ```bash
 # Клонируем репозиторий
-git clone https://github.com/username/object-db-manager.git
+git clone https://github.com/maximray/object-db-manager.git
 cd object-db-manager
 
 # Устанавливаем зависимости
