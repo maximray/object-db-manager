@@ -56,5 +56,3 @@ app/docs/source/_templates
 *.cfg
 *.db
 *.sqlite
-Error_file.txt
-object_db.txt
