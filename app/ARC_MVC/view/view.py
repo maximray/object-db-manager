@@ -15,7 +15,8 @@ from PyQt6.QtWidgets import (QAbstractItemView, QApplication, QComboBox,
 from app.ARC_MVC.controller.controller import Controller
 from app.ARC_MVC.model.model import Validators
 from datetime import datetime
-from collections import Counter
+from collections import Counter, defaultdict
+import numpy as np
 
 class DraggableTableWidget(QTableWidget):
     """Переопределённый виджет таблицы, поддерживающий drag-and-drop и контекстное меню."""
@@ -138,11 +139,6 @@ class ChartsWindow(QMainWindow):
             self.plot_start_projects()
         )
 
-        # Добавляет вкладку с графиком "Площади по объектам"
-        self.add_graph_tab(
-            self.tr("График по площади"),
-            self.plot_areas_by_objects(),
-        )
 
     def add_graph_tab(self, tab_name, canvas):
         """Добавляет вкладку с указанным названием и графиком (canvas)."""
@@ -152,46 +148,63 @@ class ChartsWindow(QMainWindow):
         tab.setLayout(layout)  # Устанавливает компоновку
         self.tabs.addTab(tab, tab_name)  # Добавляет вкладку в QTabWidget
 
+
+    """
+    CREATE CHART BY DATE AND STATUS IN CLOSE TIME
+    """
+
     def plot_start_projects(self):
-        """Создаёт график: проекты по годам."""
-        dates_start = []
+        """Строит график: количество проектов в каждом статусе по годам."""
+
+        # Годы, которые будем анализировать
+        all_years = sorted(set([int(record[3].split('-')[0]) for record in self.data]))
+
+        # status_years[год][статус] = количество проектов
+        status_years = {year: {"планируется": 0, "в процессе": 0, "завершён": 0} for year in all_years}
 
         for record in self.data:
             try:
-                dates_start.append(datetime.strptime(record[3], "%Y-%m-%d").year)
-            except ValueError:
-                continue  # Пропускаем некорректные даты
-        dates_dict = Counter(dates_start)
+                year = int(record[3].split('-')[0])
+                status = record[5].strip().lower()
+                status_years[year][status] += 1
 
-        fig, ax = plt.subplots(figsize=(10, 6))  # Создаёт фигуру и ось с заданным размером
-        ax.bar(dates_dict.keys(), dates_dict.values())  # Строит столбчатую диаграмму
+            except Exception:
+                continue
 
-        ax.set_xlabel(self.tr("Года"))  # Подпись оси X
-        ax.set_ylabel(self.tr("Количество проектов"))  # Подпись оси Y
-        ax.set_title(self.tr("Проекты по годам"))  # Заголовок графика
-        plt.xticks(rotation=45, ha="right")  # Поворачивает метки X-оси для лучшей читаемости
+        # Подготовка данных
+        statuses = ["планируется", "в процессе", "завершён"]
+        years = all_years
+        x = np.arange(len(years))
+        width = 0.25
 
-        canvas = FigureCanvas(fig)  # Создаёт холст для отображения графика
-        canvas.draw()  # Принудительно отрисовывает график
-        return canvas  # Возвращает холст
+        counts_by_status = {
+            status: [status_years[year][status] for year in years]
+            for status in statuses
+        }
 
-    def plot_areas_by_objects(self):
-        """Создаёт график: площади по объектам."""
-        areas = [int(record[-2]) for record in self.data] # берем площади
-        names = [record[1] for record in self.data] # берем названия
+        colors = {
+            "планируется": "#FFA500",  # оранжевый
+            "в процессе": "#1f77b4",   # синий
+            "завершён": "#2ca02c",     # зелёный
+        }
 
-        fig, ax = plt.subplots(figsize=(12, 8))  # Создаёт фигуру и ось
-        ax.bar(names, areas)  # Строит график по х = names and y = areas
+        fig, ax = plt.subplots(figsize=(10, 6))
 
-        ax.set_xlabel(self.tr("Названия"), fontsize=12)  # Подпись оси X
-        ax.set_ylabel(self.tr("Площадь"))  # Подпись оси Y
-        ax.set_title(self.tr("Площади объектов"))  # Заголовок
-        plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
-        plt.xticks(rotation=45, ha="right")  # Поворачивает метки на оси X
+        for i, status in enumerate(statuses):
+            ax.bar(x + i * width, counts_by_status[status], width,
+                label=self.tr(status.capitalize()), color=colors[status])
 
-        canvas = FigureCanvas(fig)  # Создаёт холст для matplotlib-графика
-        canvas.draw()  # Отрисовка
-        return canvas  # Возвращает холст
+        ax.set_xlabel(self.tr("Года"))
+        ax.set_ylabel(self.tr("Количество проектов"))
+        ax.set_title(self.tr("Количество проектов по статусам в каждый год"))
+        ax.set_xticks(x + width)
+        ax.set_xticklabels(years, rotation=45)
+        ax.legend()
+
+        canvas = FigureCanvas(fig)
+        canvas.draw()
+        return canvas
+
 
 
 
@@ -273,6 +286,8 @@ class FileTab(QWidget):
             row_layout = QHBoxLayout()
             label = QLabel(self.tr(header) + ":")  # Метка для поля
             field = QLineEdit()  # Поле ввода
+            if header == "Status": field.setPlaceholderText("планируется / в процессе / завершён")
+            elif header == "Type object": 
             row_layout.addWidget(label)
             row_layout.addWidget(field)
             self.form_layout.addLayout(row_layout)
@@ -710,6 +725,21 @@ class ObjectDBApp(QMainWindow):
         # Переводим интерфейс заново, чтобы применить изменения
         if hasattr(self, "tabs"):
             self.retranslate_ui()
+    
+    def edit_record(self):
+        current_widget = self.tabs.currentWidget()
+        if isinstance(current_widget, FileTab):
+            current_widget.edit_record()
+    
+    def add_record(self):
+        current_widget = self.tabs.currentWidget()
+        if isinstance(current_widget, FileTab):
+            current_widget.add_record()
+
+    def delete_record(self):
+        current_widget = self.tabs.currentWidget()
+        if isinstance(current_widget, FileTab):
+            current_widget.delete_record()
 
 
     def retranslate_ui(self):
