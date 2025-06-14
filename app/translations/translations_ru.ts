@@ -416,8 +416,8 @@
     </message>
     <message>
       <location filename="..\ARC_MVC\view\view.py" line="623" />
-      <source>Create a new empty database? Any unsaved changes will be lost.</source>
-      <translation>Создать новую базу? Несохраненные данные будут утеряны</translation>
+      <source>Create a new empty database?</source>
+      <translation>Создать новую базу?</translation>
     </message>
     <message>
       <location filename="..\ARC_MVC\view\view.py" line="637" />

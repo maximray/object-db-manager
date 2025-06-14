@@ -52,7 +52,7 @@ class Controller:
         reply = FileTab.show_question( # вызов вопроса
             self,  # Это ссылка на текущий объект, чтобы показывать диалоговое окно на главном окне
             self.tr("New file"),  # Заголовок окна (перевод)
-            self.tr("Create a new empty database? Any unsaved changes will be lost."),  # Текст вопроса (перевод)
+            self.tr("Create a new empty database?"),  # Текст вопроса (перевод)
         )
         
         

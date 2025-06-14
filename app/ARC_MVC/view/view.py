@@ -272,6 +272,7 @@ class FileTab(QWidget):
         self.table.setColumnCount(len(headers))
         self.table.setHorizontalHeaderLabels(headers)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.table.horizontalHeader().sectionClicked.connect(self.on_header_clicked)
         self.layout.addWidget(self.table)
@@ -286,16 +287,18 @@ class FileTab(QWidget):
             row_layout = QHBoxLayout()
             label = QLabel(self.tr(header) + ":")  # Метка для поля
             field = QLineEdit()  # Поле ввода
-            if header == "Status": field.setPlaceholderText("планируется / в процессе / завершён")
-            elif header == "Type object": 
             row_layout.addWidget(label)
             row_layout.addWidget(field)
             self.form_layout.addLayout(row_layout)
             self.form_fields.append(field)  # Сохраняем для доступа
 
         # Установка валидаторов для нужных полей
+        self.form_fields[1].setValidator(Validators.name_validator())   # Название объекта
+        self.form_fields[2].setValidator(Validators.name_validator())   # адрес
         self.form_fields[2].setValidator(Validators.date_validator())    # Дата начала
         self.form_fields[3].setValidator(Validators.date_validator())      # Дата окончания
+        self.form_fields[4].setValidator(Validators.status_validator())     # Статус
+        self.form_fields[5].setValidator(Validators.type_validator())      # Тип
         self.form_fields[6].setValidator(Validators.area_validator())      # Площадь
         self.form_fields[7].setValidator(Validators.floors_validator())     # этажность
 
@@ -566,6 +569,9 @@ class ObjectDBApp(QMainWindow):
         self.russian_action = self.lang_menu.addAction("Русский")  # Добавляем пункт "Русский"
         self.russian_action.triggered.connect(lambda: self.set_language("ru"))  # При нажатии меняем язык на русский
 
+        self.franch_action = self.lang_menu.addAction("Française")
+        self.franch_action.triggered.connect(lambda: self.set_language("fr"))
+
         # Добавляем все меню в строку меню
         menu_bar.addMenu(self.file_menu)
         menu_bar.addMenu(self.help_menu)
@@ -749,7 +755,6 @@ class ObjectDBApp(QMainWindow):
 
         # Меню "File"
         if hasattr(self, "file_menu") and self.file_menu:
-            print("[INFO] Переводим меню")
             self.file_menu.setTitle(self.tr("&File"))
             self.new_action.setText(self.tr("&New"))
             self.open_action.setText(self.tr("&Open..."))
@@ -758,11 +763,8 @@ class ObjectDBApp(QMainWindow):
             self.exit_action.setText(self.tr("E&xit"))
             self.print_action.setText(self.tr("Print"))
 
-        # Меню "Language"
         if hasattr(self, "lang_menu") and self.lang_menu:
             self.lang_menu.setTitle(self.tr("&Language"))
-            self.english_action.setText(self.tr("English"))
-            self.russian_action.setText(self.tr("Русский"))
 
         # Меню "Help"
         if hasattr(self, "help_menu") and self.help_menu:
@@ -839,7 +841,6 @@ class ObjectDBApp(QMainWindow):
             if search_input:
                 search_input.setPlaceholderText(self.tr("Enter text to search..."))
 
-        print("[INFO] Перевели")
 
 
     def show_about(self):
@@ -856,8 +857,8 @@ class ObjectDBApp(QMainWindow):
         Курс: <b>2</b><br>
         Группа: <b>2</b><br><br>
         """
-        else:
-            about_text = """
+        elif self.lang_code == "en":
+            about_text = self.tr("""
         <b>Application for managing constructed objects of construction organizations</b><br><br>
         Version: <b>1.0</b><br>
         Author: <b>Raykov Maksim Sergeyvich</b><br>
@@ -865,8 +866,16 @@ class ObjectDBApp(QMainWindow):
         Institute: <b>ICTMS</b><br>
         Course: <b>2</b><br>
         Group: <b>2</b><br><br>
-        """
-
+        """)
+        else:
+            about_text = """
+        <b>Application de gestion des objets construits pour les organisations de construction</b><br><br>
+        Version : <b>1.0</b><br>
+        Auteur : <b>Raykov Maksim Sergeyvich</b><br>
+        Université : <b>Université d'État de génie civil de Moscou (MGSU)</b><br>
+        Institut : <b>ICTMS</b><br>
+        Année : <b>2</b><br>
+        Groupe : <b>2</b><br><br>"""
         # Создаем и показываем диалоговое окно
         msg = QMessageBox()
         msg.setWindowTitle(["О программе", "About"][self.lang_code == "en"])

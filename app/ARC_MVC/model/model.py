@@ -14,7 +14,7 @@ class Validators:
 
     @staticmethod # Статический метод, можем вызвать без экземпляра класса
     def name_validator(): # объявляем функцию для валидации имени
-        regex = QRegularExpression("[A-Za-zА-Яа-яёЁ\\s-]{2,50}") # регулярное выражение все буквы английского и русского алфавита([A-Za-zА-Яа-я) так же 
+        regex = QRegularExpression("[A-Za-zА-Яа-яёЁ0-9,.:\\s-]{2,50}") # регулярное выражение все буквы английского и русского алфавита([A-Za-zА-Яа-я) так же 
         # буквы ёЁ(ёЁ) так как они не входят в А-Яа-я дальше пробельные символы(\\s) и дефис(-]) строка должна содержать от 2 до 50 символов ({2, 50})
         return QRegularExpressionValidator(regex) # возвращаем переработанное регулярное выражение
 
@@ -34,6 +34,17 @@ class Validators:
     def floors_validator():
         regex = QRegularExpression("^(1[0-1][0-9]|120|[1-9][0-9]?)$") # этажность от 1 до 120
         return QRegularExpressionValidator(regex)
+
+    @staticmethod
+    def status_validator():
+        regex = QRegularExpression("^(в процессе|планируется|завершён?)$")
+        return QRegularExpressionValidator(regex)
+    
+    @staticmethod
+    def type_validator():
+        regex = QRegularExpression("^(коммерческий|жилой|промышленный?)$")
+        return QRegularExpressionValidator(regex)
+    
 
 
 class Model:

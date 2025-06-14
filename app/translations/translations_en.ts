@@ -300,8 +300,8 @@
       <translation type="vanished">New file</translation>
     </message>
     <message>
-      <source>Create a new empty database? Any unsaved changes will be lost.</source>
-      <translation type="vanished">Create a new empty database? Any unsaved changes will be lost.</translation>
+      <source>Create a new empty database? </source>
+      <translation type="vanished">Create a new empty database?</translation>
     </message>
     <message>
       <source>Failed to save file: %s</source>
